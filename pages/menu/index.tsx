@@ -1,9 +1,11 @@
-import { Button, Layout, Table } from "antd";
+import { Button, Layout, notification, Table } from "antd";
 import React from "react";
 import { Sidebar } from "../../components/Sidebar";
 import styled from "styled-components";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
+import { useMutation, useQuery } from "react-query";
+import { deleteFood, getFoodList } from "../../service/menu";
 
 const Wrapper = styled.div`
   .ant-layout {
@@ -24,8 +26,8 @@ const ButtonWrapper = styled.div`
 const columns = [
   {
     title: "Food Item",
-    dataIndex: "food-item",
-    key: "food-item",
+    dataIndex: "name",
+    key: "name",
   },
   {
     title: "Price",
@@ -48,6 +50,32 @@ const columns = [
 const Menu = () => {
   const { Header, Sider, Content } = Layout;
   const router = useRouter();
+
+  const { data: foodList, refetch } = useQuery("get-foodList", getFoodList, {
+    refetchOnWindowFocus: false,
+  });
+
+  const { mutate: handleFoodDelete } = useMutation(deleteFood, {
+    onSuccess: () => {
+      notification.success({
+        message: "Deleted Successfully",
+        type: "success",
+      });
+
+      refetch();
+    },
+    onError: () => {
+      notification.error({
+        type: "error",
+        message: "Error Occured",
+      });
+    },
+  });
+  
+  const handleDelete = () => {
+    handleFoodDelete({});
+  };
+  const handleEditFood = () => {};
   return (
     <>
       <Wrapper>
@@ -60,11 +88,11 @@ const Menu = () => {
             <Layout style={{ padding: "24px" }}>
               <Content>
                 <ButtonWrapper>
-                  <Button onClick={() => router.push("/add-food")}>
+                  <Button onClick={() => router.push("/menu/add")}>
                     Add Food
                   </Button>
                 </ButtonWrapper>
-                <Table columns={columns}></Table>
+                <Table columns={columns} dataSource={foodList}></Table>
               </Content>
             </Layout>
           </Layout>

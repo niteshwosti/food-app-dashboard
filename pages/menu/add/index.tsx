@@ -1,10 +1,10 @@
 import React from "react";
-import CategoryForm from "../../../components/CategoryForm";
+import MenuForm from "../../../components/MenuForm";
 
 const Add = () => {
   return (
     <>
-      <CategoryForm isEdit={true} />
+      <MenuForm isEdit={false} />
     </>
   );
 };

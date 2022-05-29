@@ -1,5 +1,5 @@
 import { Button, Layout, Table } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 import { Sidebar } from "../../components/Sidebar";
 import styled from "styled-components";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
@@ -21,31 +21,14 @@ const ButtonWrapper = styled.div`
   margin-bottom: 8px;
   float: right;
 `;
-const columns = [
-  {
-    title: "Food Item",
-    dataIndex: "food-item",
-    key: "food-item",
-  },
-  {
-    title: "Price",
-    dataIndex: "price",
-    key: "price",
-  },
-  {
-    title: "Action",
-    dataIndex: "action",
-    key: "action",
-    render: () => (
-      <>
-        <EditOutlined />
-        <DeleteOutlined />
-      </>
-    ),
-  },
-];
 
 const Orders = () => {
+  useEffect(() => {
+    if (!localStorage.getItem("access_token")) {
+      router.push("/");
+    }
+  }, []);
+
   const { Header, Sider, Content } = Layout;
   const router = useRouter();
   return (

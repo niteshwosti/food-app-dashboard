@@ -1,4 +1,4 @@
-import { Alert, Button, Form, Input } from "antd";
+import { Alert, Button, Form, Input, notification } from "antd";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
 import React from "react";
@@ -72,14 +72,13 @@ const Login = () => {
 
   const { mutate: handleLoginSubmit, isLoading } = useMutation(executeLogin, {
     onSuccess: (res) => {
-      console.log(res)
+      console.log(res);
       localStorage.setItem("access_token", res.access_token);
       router.push("/orders");
     },
     onError: () => {
-      Alert({
-        type: "error",
-        message: "Email or Password Incorrect",
+      notification.open({
+        message: "Email or Password is incorrect",
       });
     },
   });

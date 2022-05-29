@@ -39,7 +39,7 @@ const Category = () => {
     fetchCategoryList,
     { refetchOnWindowFocus: false }
   );
-  console.log(categoryList);
+ 
   const { mutate: handleCategoryDelete } = useMutation(deleteCategory, {
     onSuccess: () => {
       Alert({
@@ -66,18 +66,18 @@ const Category = () => {
     {
       title: "Category",
       dataIndex: "name",
-      key: "name",
+      render: (_: any, record: any) => <p>{record.name}</p>,
     },
     {
       title: "Action",
       dataIndex: "id",
       key: "id",
-      render: (id: any) => (
+      render: (_: any, record: any) => (
         <>
           <ActionWrapper>
             <div
               onClick={() => {
-                router.push(`/category/edit/${id}`);
+                router.push(`/category/edit/${record.id}`);
               }}
             >
               <EditOutlined />
@@ -85,7 +85,7 @@ const Category = () => {
             <div>
               <Popconfirm
                 title={"Are you sure you want to delete?"}
-                onConfirm={() => handleDelete(id)}
+                onConfirm={() => handleDelete(record.id)}
                 onCancel={() => setModalVisible(false)}
               >
                 <DeleteOutlined onClick={() => handleModalOpen()} />

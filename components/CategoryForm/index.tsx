@@ -3,8 +3,13 @@ import React from "react";
 import { Sidebar } from "../../components/Sidebar";
 import styled from "styled-components";
 import { useFormik } from "formik";
-import { useMutation } from "react-query";
-import { addCategory, getCategoryById } from "../../service/category";
+import { useMutation, useQuery } from "react-query";
+import {
+  addCategory,
+  fetchCategoryList,
+  getCategoryById,
+  updateCategory,
+} from "../../service/category";
 import { useRouter } from "next/router";
 
 const Wrapper = styled.div`
@@ -38,9 +43,10 @@ const ButtonWrapper = styled.div`
 
 interface Props {
   isEdit?: boolean;
+  cId?: any;
 }
 
-const CategoryForm = ({ isEdit }: Props) => {
+const CategoryForm = ({ isEdit, cId }: Props) => {
   const { Header, Sider, Content } = Layout;
   const router = useRouter();
 
@@ -60,7 +66,7 @@ const CategoryForm = ({ isEdit }: Props) => {
     },
   });
   const { mutate: handleCategoryEdit, isLoading: loading } = useMutation(
-    getCategoryById,
+    updateCategory,
     {
       onSuccess: () => {
         router.push("/category");
@@ -77,6 +83,16 @@ const CategoryForm = ({ isEdit }: Props) => {
       },
     }
   );
+  const { data: categoryList } = useQuery(
+    ["fetch-categories"],
+    fetchCategoryList,
+    {
+      refetchOnWindowFocus: false,
+      enabled: isEdit,
+    }
+  );
+  const categId = categoryList.id;
+
   const handleSubmit = () => {
     handleCategorySubmit({
       ...formik.values,
@@ -88,11 +104,12 @@ const CategoryForm = ({ isEdit }: Props) => {
       data: {
         ...formik.values,
       },
+      categId,
     });
   };
   const formik = useFormik({
     initialValues: {
-      name: "",
+      name: categoryList?.name || "",
     },
     enableReinitialize: true,
     onSubmit: !isEdit ? handleSubmit : handleEdit,
