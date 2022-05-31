@@ -51,16 +51,14 @@ const Orders = () => {
     {
       title: "Food Name",
       dataIndex: "foodName",
-      render: (_: any, record: any) => {
-        return (
-          <>
-            <p>
-              {console.log(record.orderDetail.foodName)}
-              {record.orderDetail?.foodName}
-            </p>
-          </>
-        );
-      },
+      render: (_: any, record: any) => (
+        <>
+          <p>
+            {console.log(record.orderDetail.foodName)}
+            {record.orderDetail?.foodName}
+          </p>
+        </>
+      ),
     },
     {
       title: "Order Date",
