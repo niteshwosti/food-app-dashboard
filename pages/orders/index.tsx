@@ -4,6 +4,9 @@ import { Sidebar } from "../../components/Sidebar";
 import styled from "styled-components";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
+import { useQuery } from "react-query";
+import { getOrders } from "../../service/orders";
+import moment from "moment";
 
 const Wrapper = styled.div`
   .ant-layout {
@@ -23,14 +26,69 @@ const ButtonWrapper = styled.div`
 `;
 
 const Orders = () => {
+  const { Header, Sider, Content } = Layout;
+  const router = useRouter();
+  const {
+    data: ordersList,
+    refetch,
+    isLoading,
+  } = useQuery("get-orders", getOrders, {
+    refetchOnWindowFocus: false,
+  });
+
   useEffect(() => {
     if (!localStorage.getItem("access_token")) {
       router.push("/");
     }
   }, []);
 
-  const { Header, Sider, Content } = Layout;
-  const router = useRouter();
+  const columns = [
+    {
+      title: "Order Number",
+      dataIndex: "orderNo",
+      render: (_: any, record: any) => <p>{record.orderNo}</p>,
+    },
+    {
+      title: "Food Name",
+      dataIndex: "foodName",
+      render: (_: any, record: any) => {
+        return (
+          <>
+            <p>
+              {console.log(record.orderDetail.foodName)}
+              {record.orderDetail?.foodName}
+            </p>
+          </>
+        );
+      },
+    },
+    {
+      title: "Order Date",
+      dataIndex: "orderDate",
+      render: (_: any, record: any) => (
+        <>
+          <p>{moment(record.orderDate).format("YYYY:MM:DD")}</p>
+          <p>{moment(record.orderDate).format("HH:mm:ss")}</p>
+        </>
+      ),
+    },
+    {
+      title: "Quantity",
+      dataIndex: "quantity",
+      render: (_: any, record: any) => <p>{record.orderDetail.quantity}</p>,
+    },
+    {
+      title: "Rate",
+      dataIndex: "rate",
+      render: (_: any, record: any) => <p>{record.orderDetail[0].rate}</p>,
+    },
+    {
+      title: "Amount",
+      dataIndex: "amount",
+      render: (_: any, record: any) => <p>{record.orderDetail[0].amount}</p>,
+    },
+  ];
+
   return (
     <>
       <Wrapper>
@@ -41,7 +99,9 @@ const Orders = () => {
               <Sidebar />
             </Sider>
             <Layout style={{ padding: "24px" }}>
-              <Content>Food order is displayed here</Content>
+              <Content>
+                <Table columns={columns} dataSource={ordersList} />
+              </Content>
             </Layout>
           </Layout>
         </Layout>

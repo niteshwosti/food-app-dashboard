@@ -73,6 +73,7 @@ const MenuForm = ({ isEdit, mId }: Props) => {
       });
     },
   });
+
   const { mutate: handleFoodEdit, isLoading: loading } = useMutation(
     updateFood,
     {
@@ -125,7 +126,6 @@ const MenuForm = ({ isEdit, mId }: Props) => {
   const formik = useFormik({
     initialValues: {
       name: foodItem?.name || "",
-      categoryId: foodItem?.categoryId || "",
       categoryName: foodItem?.categoryName || "",
       description: foodItem?.description || "",
       imageUrl: foodItem?.imageUrl || "",
@@ -135,10 +135,6 @@ const MenuForm = ({ isEdit, mId }: Props) => {
     enableReinitialize: true,
     onSubmit: !isEdit ? handleSubmit : handleEdit,
   });
-
-  useEffect(() => {
-    refetch();
-  }, []);
 
   return (
     <>
@@ -187,12 +183,16 @@ const MenuForm = ({ isEdit, mId }: Props) => {
                     <FormItemWrapper>
                       <label>Upload Image</label>
                       <br />
-                      <Upload name="imageUrl" onChange={formik.handleChange}>
-                        <Button icon={<UploadOutlined />}>
-                          {" "}
-                          Click to upload
-                        </Button>
-                      </Upload>
+                      <Input
+                        type="file"
+                        name="iamgeUrl"
+                        onChange={(event) =>
+                          formik.setFieldValue(
+                            "imageUrl",
+                            event.target.files
+                          )
+                        }
+                      />
                     </FormItemWrapper>
                     <FormItemWrapper>
                       <label>Calories</label>
