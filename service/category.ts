@@ -5,8 +5,8 @@ export const addCategory = async (formData: any) => {
   return data;
 };
 
-export const getCategoryById = async (id: any) => {
-  const { data } = await API.get(`/categories/${id}`);
+export const getCategoryById = async ({ queryKey }: any) => {
+  const { data } = await API.get(`/categories/${queryKey[1]}`);
   return data;
 };
 export const deleteCategory = async (id: any) => {
@@ -15,7 +15,7 @@ export const deleteCategory = async (id: any) => {
 };
 
 export const updateCategory = async (formData: any) => {
-  const { data } = await API.put(`/categories/${formData.id}`, formData);
+  const { data } = await API.put(`/categories/${formData.cId}`, formData);
   return data;
 };
 export const fetchCategoryList = async () => {

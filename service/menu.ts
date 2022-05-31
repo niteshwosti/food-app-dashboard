@@ -10,12 +10,13 @@ export const getFoodList = async () => {
   return data;
 };
 
-export const getFoodById = async (id: any) => {
-  const { data } = await API.get(`/foods/${id}`);
+export const getFoodById = async ({ queryKey }: any) => {
+  const { data } = await API.get(`/foods/${queryKey[1]}`);
+  return data;
 };
 
 export const updateFood = async (formData: any) => {
-  const { data } = await API.put(`/foods/${formData.id}`, formData);
+  const { data } = await API.put(`/foods/${formData.mId}`, formData);
   return data;
 };
 

@@ -1,5 +1,13 @@
-import { Alert, Button, Layout, message, Popconfirm, Table } from "antd";
-import React, { useState } from "react";
+import {
+  Alert,
+  Button,
+  Layout,
+  message,
+  notification,
+  Popconfirm,
+  Table,
+} from "antd";
+import React, { useEffect, useState } from "react";
 import { Sidebar } from "../../components/Sidebar";
 import styled from "styled-components";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
@@ -39,17 +47,17 @@ const Category = () => {
     fetchCategoryList,
     { refetchOnWindowFocus: false }
   );
- 
+
   const { mutate: handleCategoryDelete } = useMutation(deleteCategory, {
     onSuccess: () => {
-      Alert({
+      notification.success({
         type: "success",
         message: "Deleted Successfully",
       });
       refetch();
     },
     onError: () => {
-      Alert({
+      notification.error({
         type: "error",
         message: "Error Occured",
       });
@@ -62,22 +70,25 @@ const Category = () => {
     handleCategoryDelete(id);
     setModalVisible(false);
   };
+  useEffect(() => {
+    refetch()
+  }, []);
+
   const columns = [
     {
       title: "Category",
       dataIndex: "name",
-      render: (_: any, record: any) => <p>{record.name}</p>,
     },
     {
       title: "Action",
-      dataIndex: "id",
-      key: "id",
-      render: (_: any, record: any) => (
+      dataIndex: "_id",
+      key: "_id",
+      render: (_id: any) => (
         <>
           <ActionWrapper>
             <div
               onClick={() => {
-                router.push(`/category/edit/${record.id}`);
+                router.push(`/category/edit/${_id}`);
               }}
             >
               <EditOutlined />
@@ -85,7 +96,7 @@ const Category = () => {
             <div>
               <Popconfirm
                 title={"Are you sure you want to delete?"}
-                onConfirm={() => handleDelete(record.id)}
+                onConfirm={() => handleDelete(_id)}
                 onCancel={() => setModalVisible(false)}
               >
                 <DeleteOutlined onClick={() => handleModalOpen()} />
@@ -114,10 +125,10 @@ const Category = () => {
                   </Button>
                 </ButtonWrapper>
                 <Table
-                  rowKey={`id`}
-                  onRow={(categoryList) => {
+                  rowKey={`_id`}
+                  onRow={(category) => {
                     return {
-                      id: categoryList.id,
+                      id: category._id,
                     };
                   }}
                   columns={columns}

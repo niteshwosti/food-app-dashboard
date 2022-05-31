@@ -7,7 +7,7 @@ const Edit = () => {
   const { id } = router.query;
   return (
     <>
-      <MenuForm isEdit={true} />
+      <MenuForm isEdit={true} mId={id} />
     </>
   );
 };

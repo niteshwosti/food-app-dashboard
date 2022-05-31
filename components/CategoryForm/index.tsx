@@ -1,4 +1,4 @@
-import { Alert, Button, Form, Input, Layout } from "antd";
+import { Alert, Button, Form, Input, Layout, notification } from "antd";
 import React from "react";
 import { Sidebar } from "../../components/Sidebar";
 import styled from "styled-components";
@@ -53,13 +53,13 @@ const CategoryForm = ({ isEdit, cId }: Props) => {
   const { mutate: handleCategorySubmit, isLoading } = useMutation(addCategory, {
     onSuccess: () => {
       router.push("/category");
-      Alert({
+      notification.success({
         type: "success",
         message: "Added Successfully.",
       });
     },
     onError: () => {
-      Alert({
+      notification.error({
         type: "error",
         message: "Something went wrong",
       });
@@ -70,28 +70,28 @@ const CategoryForm = ({ isEdit, cId }: Props) => {
     {
       onSuccess: () => {
         router.push("/category");
-        Alert({
+        notification.success({
           type: "success",
           message: "Edited Successfully.",
         });
       },
       onError: () => {
-        Alert({
+        notification.error({
           type: "error",
           message: "Something went wrong",
         });
       },
     }
   );
+
   const { data: categoryList } = useQuery(
-    ["fetch-categories"],
-    fetchCategoryList,
+    ["fetch-categories", cId],
+    getCategoryById,
     {
       refetchOnWindowFocus: false,
       enabled: isEdit,
     }
   );
-  const categId = categoryList.id;
 
   const handleSubmit = () => {
     handleCategorySubmit({
@@ -101,12 +101,11 @@ const CategoryForm = ({ isEdit, cId }: Props) => {
 
   const handleEdit = () => {
     handleCategoryEdit({
-      data: {
-        ...formik.values,
-      },
-      categId,
+      ...formik.values,
+      cId,
     });
   };
+
   const formik = useFormik({
     initialValues: {
       name: categoryList?.name || "",

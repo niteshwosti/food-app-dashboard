@@ -1,5 +1,5 @@
-import { Button, Layout, notification, Table } from "antd";
-import React from "react";
+import { Button, Layout, notification, Popconfirm, Table } from "antd";
+import React, { useState } from "react";
 import { Sidebar } from "../../components/Sidebar";
 import styled from "styled-components";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
@@ -19,37 +19,59 @@ const Wrapper = styled.div`
   }
 `;
 
+const ActionWrapper = styled.div`
+  max-width: 55px;
+  display: flex;
+  justify-content: space-between;
+`;
 const ButtonWrapper = styled.div`
   margin-bottom: 8px;
   float: right;
 `;
-const columns = [
-  {
-    title: "Food Item",
-    dataIndex: "name",
-    key: "name",
-  },
-  {
-    title: "Price",
-    dataIndex: "price",
-    key: "price",
-  },
-  {
-    title: "Action",
-    dataIndex: "action",
-    key: "action",
-    render: () => (
-      <>
-        <EditOutlined />
-        <DeleteOutlined />
-      </>
-    ),
-  },
-];
 
 const Menu = () => {
   const { Header, Sider, Content } = Layout;
   const router = useRouter();
+  const [modalVisible, setModalVisible] = useState(false);
+  const columns = [
+    {
+      title: "Food Item",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
+    },
+    {
+      title: "Action",
+      dataIndex: "_id",
+      key: "_id",
+      render: (_id: any) => (
+        <>
+          <ActionWrapper>
+            <div
+              onClick={() => {
+                router.push(`/menu/edit/${_id}`);
+              }}
+            >
+              <EditOutlined />
+            </div>
+            <div>
+              <Popconfirm
+                title={"Are you sure you want to delete?"}
+                onConfirm={() => handleDelete(_id)}
+                onCancel={() => setModalVisible(false)}
+              >
+                <DeleteOutlined onClick={() => handleModalOpen()} />
+              </Popconfirm>
+            </div>
+          </ActionWrapper>
+        </>
+      ),
+    },
+  ];
 
   const { data: foodList, refetch } = useQuery("get-foodList", getFoodList, {
     refetchOnWindowFocus: false,
@@ -71,11 +93,14 @@ const Menu = () => {
       });
     },
   });
-  
-  const handleDelete = () => {
-    handleFoodDelete({});
+  const handleModalOpen = () => {
+    setModalVisible(true);
   };
-  const handleEditFood = () => {};
+  const handleDelete = (id: any) => {
+    handleFoodDelete(id);
+    setModalVisible(false);
+  };
+
   return (
     <>
       <Wrapper>
@@ -92,7 +117,16 @@ const Menu = () => {
                     Add Food
                   </Button>
                 </ButtonWrapper>
-                <Table columns={columns} dataSource={foodList}></Table>
+                <Table
+                  rowKey={`_id`}
+                  onRow={(food) => {
+                    return {
+                      id: food._id,
+                    };
+                  }}
+                  columns={columns}
+                  dataSource={foodList}
+                ></Table>
               </Content>
             </Layout>
           </Layout>

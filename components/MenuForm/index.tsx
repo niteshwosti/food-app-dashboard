@@ -7,7 +7,7 @@ import {
   Select,
   Upload,
 } from "antd";
-import React from "react";
+import React, { Children, useEffect } from "react";
 import { Sidebar } from "../../components/Sidebar";
 import styled from "styled-components";
 import TextArea from "antd/lib/input/TextArea";
@@ -15,7 +15,7 @@ import { useFormik } from "formik";
 import { UploadOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "react-query";
 import { useRouter } from "next/router";
-import { addFood } from "../../service/menu";
+import { addFood, getFoodById, updateFood } from "../../service/menu";
 import { fetchCategoryList } from "../../service/category";
 
 const Wrapper = styled.div`
@@ -51,8 +51,10 @@ const ButtonWrapper = styled.div`
 `;
 interface Props {
   isEdit?: boolean;
+  mId?: any;
 }
-const MenuForm = ({ isEdit }: Props) => {
+const { Option } = Select;
+const MenuForm = ({ isEdit, mId }: Props) => {
   const { Header, Sider, Content } = Layout;
   const router = useRouter();
 
@@ -71,33 +73,72 @@ const MenuForm = ({ isEdit }: Props) => {
       });
     },
   });
+  const { mutate: handleFoodEdit, isLoading: loading } = useMutation(
+    updateFood,
+    {
+      onSuccess: () => {
+        router.push("/menu");
+        notification.success({
+          type: "success",
+          message: "Edited Successfully.",
+        });
+        refetch();
+      },
+      onError: () => {
+        notification.error({
+          type: "error",
+          message: "Something went wrong",
+        });
+      },
+    }
+  );
+
+  const { data: foodItem, refetch } = useQuery(
+    ["fetch-foods", mId],
+    getFoodById,
+    {
+      refetchOnWindowFocus: false,
+      enabled: isEdit,
+    }
+  );
 
   const { data: categoryList } = useQuery(
     ["fetch-categories"],
     fetchCategoryList,
     {
       refetchOnWindowFocus: false,
-      enabled: isEdit,
     }
   );
+
   const handleSubmit = () => {
     handleFoodSubmit({
       ...formik.values,
     });
   };
-  const handleEdit = () => {};
+  const handleEdit = () => {
+    handleFoodEdit({
+      ...formik.values,
+      mId,
+    });
+  };
 
   const formik = useFormik({
     initialValues: {
-      name: "",
-      categoryId: "",
-      description: "",
-      imageUrl: "",
-      price: "",
+      name: foodItem?.name || "",
+      categoryId: foodItem?.categoryId || "",
+      categoryName: foodItem?.categoryName || "",
+      description: foodItem?.description || "",
+      imageUrl: foodItem?.imageUrl || "",
+      calories: foodItem?.calories || "",
+      price: foodItem?.price || "",
     },
     enableReinitialize: true,
     onSubmit: !isEdit ? handleSubmit : handleEdit,
   });
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   return (
     <>
@@ -110,7 +151,12 @@ const MenuForm = ({ isEdit }: Props) => {
             </Sider>
             <Layout style={{ padding: "24px" }}>
               <Content>
-                <Header className="inside-header">Add Food</Header>
+                {!isEdit ? (
+                  <Header className="inside-header">Add Food</Header>
+                ) : (
+                  <Header className="inside-header">Edit Food</Header>
+                )}
+
                 <FormWrapper>
                   <Form onFinish={formik.handleSubmit}>
                     <FormItemWrapper>
@@ -128,22 +174,34 @@ const MenuForm = ({ isEdit }: Props) => {
                       <Select
                         style={{ width: 200 }}
                         allowClear
-                        options={categoryList}
-                        value={formik.values.categoryId}
+                        value={formik.values.categoryName}
                         onChange={(value) =>
-                          formik.setFieldValue("categories", value)
+                          formik.setFieldValue("categoryName", value)
                         }
-                      />
+                      >
+                        {categoryList?.map((data: any) => {
+                          return <Option value={data.name}>{data.name}</Option>;
+                        })}
+                      </Select>
                     </FormItemWrapper>
                     <FormItemWrapper>
                       <label>Upload Image</label>
                       <br />
-                      <Upload name="imageUrl" onChange={formik.handleChange} >
+                      <Upload name="imageUrl" onChange={formik.handleChange}>
                         <Button icon={<UploadOutlined />}>
                           {" "}
                           Click to upload
                         </Button>
                       </Upload>
+                    </FormItemWrapper>
+                    <FormItemWrapper>
+                      <label>Calories</label>
+                      <Input
+                        type="text"
+                        name="calories"
+                        onChange={formik.handleChange}
+                        value={formik.values.calories}
+                      />
                     </FormItemWrapper>
                     <TextAreaWrapper>
                       <label>Description</label>
@@ -175,7 +233,11 @@ const MenuForm = ({ isEdit }: Props) => {
                           Add
                         </Button>
                       ) : (
-                        <Button type="primary" htmlType="submit">
+                        <Button
+                          type="primary"
+                          htmlType="submit"
+                          loading={loading}
+                        >
                           Edit
                         </Button>
                       )}
