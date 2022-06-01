@@ -106,7 +106,7 @@ const Login = () => {
           </ImageContainer>
           <Form onFinish={formik.handleSubmit} layout="vertical">
             <FormItemWrapper>
-              <Label>Email Address</Label>
+              <Label>Username</Label>
               <Input
                 type="text"
                 name="username"

@@ -54,8 +54,7 @@ const Orders = () => {
       render: (_: any, record: any) => (
         <>
           <p>
-            {console.log(record.orderDetail.foodName)}
-            {record.orderDetail?.foodName}
+            {record.orderDetail[0].foodName}
           </p>
         </>
       ),
@@ -73,7 +72,7 @@ const Orders = () => {
     {
       title: "Quantity",
       dataIndex: "quantity",
-      render: (_: any, record: any) => <p>{record.orderDetail.quantity}</p>,
+      render: (_: any, record: any) => <p>{record.orderDetail[0].quantity}</p>,
     },
     {
       title: "Rate",
