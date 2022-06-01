@@ -40,6 +40,16 @@ const Menu = () => {
       key: "name",
     },
     {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
+      title: "Calories",
+      dataIndex: "calories",
+      key: "calories",
+    },
+    {
       title: "Price",
       dataIndex: "price",
       key: "price",
