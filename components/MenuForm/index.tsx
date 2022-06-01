@@ -187,7 +187,7 @@ const MenuForm = ({ isEdit, mId }: Props) => {
                         type="url"
                         name="iamgeUrl"
                        onChange={formik.handleChange}
-                       value={formik.value.imageUrl}
+                       value={formik.values.imageUrl}
                       />
                     </FormItemWrapper>
                     <FormItemWrapper>
