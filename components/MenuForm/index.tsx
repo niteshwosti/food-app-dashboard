@@ -184,14 +184,10 @@ const MenuForm = ({ isEdit, mId }: Props) => {
                       <label>Upload Image</label>
                       <br />
                       <Input
-                        type="file"
+                        type="url"
                         name="iamgeUrl"
-                        onChange={(event) =>
-                          formik.setFieldValue(
-                            "imageUrl",
-                            event.target.files
-                          )
-                        }
+                       onChange={formik.handleChange}
+                       value={formik.value.imageUrl}
                       />
                     </FormItemWrapper>
                     <FormItemWrapper>
