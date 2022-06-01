@@ -183,12 +183,10 @@ const MenuForm = ({ isEdit, mId }: Props) => {
                     <FormItemWrapper>
                       <label>Upload Image</label>
                       <br />
-                      <Input
-                        type="url"
-                        name="iamgeUrl"
-                       onChange={formik.handleChange}
-                       value={formik.values.imageUrl}
-                      />
+                     <Input type="url"
+                     name="imageUrl"
+                     value={formik.values.imageUrl}
+                     onChange={formik.handleChange}/>
                     </FormItemWrapper>
                     <FormItemWrapper>
                       <label>Calories</label>
